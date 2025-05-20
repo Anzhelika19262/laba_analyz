@@ -8,6 +8,26 @@ public class GRRule {
     public GRRule() {
     }
 
+    public ArrayList<String> getRight() {
+        return right;
+    }
+
+    public void setRight(ArrayList<String> right) {
+        this.right = right;
+    }
+
+    public ArrayList<String> getAction() {
+        return action;
+    }
+
+    public void setAction(ArrayList<String> action) {
+        this.action = action;
+    }
+
+    public String getLeft() {
+        return left;
+    }
+
     public void setLeft(String left) {
         this.left = left;
     }

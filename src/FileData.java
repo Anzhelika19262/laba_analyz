@@ -5,12 +5,13 @@ import java.util.Scanner;
 public class FileData {
     public static void fillDataFromFile(BufferedReader inputFile, LrGrammar grammar) throws IOException {
         String fileLine;
-        String startWord = "";
+        String startWord;
         int cntLine = 0;
 
         while ((fileLine = inputFile.readLine()) != null){
             GRRule newRule = new GRRule();
             String lineWord = "";
+            startWord = "";
             cntLine++;
 
             Scanner scanner = new Scanner(fileLine);
@@ -25,12 +26,10 @@ public class FileData {
             if (scanner.hasNext())
                 lineWord = scanner.next();
 
-            if (!lineWord.contains(" -> "))
+            if (!lineWord.contains("->"))
                 System.out.println("Неверный формат записи файла с грамматикой, строка: " + cntLine);
-                //возможно тут стоит исключение или что такое выбрасывать и разбирать файл дальше
 
             boolean isAction = true;
-
             while (scanner.hasNext()){
                 lineWord = scanner.next();
                 if (!lineWord.equals("|")){
@@ -46,10 +45,10 @@ public class FileData {
                 } else {
                     if (!isAction)
                         newRule.addAction("");
-                    if (!newRule.right.isEmpty()) {
+                    if (!newRule.getRight().isEmpty()) {
                         grammar.setRule(newRule);
-                        newRule.right.clear();
-                        newRule.action.clear();
+                        newRule.getRight().clear();
+                        newRule.getAction().clear();
                         isAction = true;
                     }
                 }
@@ -65,7 +64,7 @@ public class FileData {
         String fileLine;
 
         while ((fileLine = inputFile.readLine()) != null){
-            text.append((fileLine.isEmpty()) ? "\n" : (fileLine + "\n"));
+            text.append((fileLine.length() > 0) ? (fileLine + "\n") : "\n");
         }
         text.append('$');
         return text.toString();

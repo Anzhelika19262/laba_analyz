@@ -8,7 +8,24 @@ public class SemanticType {
     public SemanticType() {
         this.level = 0;
     }
-    void clear() {
+
+    public ArrayList<DefVar> getVar() {
+        return var;
+    }
+
+    public void setVar(ArrayList<DefVar> var) {
+        this.var = var;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public void clear() {
         level = 0;
         var.clear();
     }

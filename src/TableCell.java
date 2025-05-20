@@ -1,20 +1,22 @@
 public class TableCell {
-    public char stateSymb;
-    public int numState;
-    public String lableElem;
-    public String action;
+    protected char stateSymb;
+    protected int numState;
+    protected String lableElem;
+    protected String action;
 
-    public TableCell() {
-    }
+    public TableCell() {}
     public TableCell(char stateSymb, int numState) {
         this.stateSymb = stateSymb;
         this.numState = numState;
+        this.lableElem = "";
+        this.action = "";
     }
 
     public TableCell(char stateSymb, int numState, String lableElem) {
         this.stateSymb = stateSymb;
         this.numState = numState;
         this.lableElem = lableElem;
+        this.action = "";
     }
 
     public char getStateSymb() {

@@ -1,15 +1,12 @@
 import javax.lang.model.util.AbstractElementVisitor14;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class LrGraph {
     LrGrammar grammar;
     ArrayList<ArrayList<LrSituation>> listVecs = new ArrayList<>();
-    ArrayList<GraphState> grStates= new ArrayList<>();
+    ArrayList<GraphState> grStates = new ArrayList<>();
     Set<String> setElements = new HashSet<>();
 
     public LrGraph(LrGrammar grammar) {
@@ -35,30 +32,30 @@ public class LrGraph {
     public void defMultipleStates() {
         ArrayList<LrSituation> lrVec = new ArrayList<>();
         LrSituation sit = new LrSituation();
-        sit.left = grammar.getRule(0).left;
-        sit.right = grammar.getRule(0).right;
+        sit.setLeft(grammar.getRule(0).getLeft());
+        sit.setRight(grammar.getRule(0).getRight());
         lrVec.add(sit);
 
         closure(lrVec);
         listVecs.add(lrVec);
 
-        int childPosition = 1;
-
-        for (int i = 0; i < listVecs.size(); ++i) {
-            Set<String> lrSet = new HashSet<>();
-            setOfStates(listVecs.get(i), lrSet);
+        int listVecsSize = listVecs.size();
+        for (int i = 0; i < listVecsSize; ++i) {
+            Set<String> lrSet = setOfStates(listVecs.get(i));
             GraphState grs = new GraphState(i, 0, "");
 
             for (String symb: lrSet) {
-                grs.labelTransition = symb;
+                grs.setLabelTransition(symb);
                 ArrayList<LrSituation> subVec = new ArrayList<>();
+
                 for (LrSituation elem: listVecs.get(i)) {
-                    if (Objects.equals(elem.right.get(elem.curIndex), symb)) {
-                        if (elem.pointPosition == elem.right.size())	continue;
+                    if (Objects.equals(elem.getRight().get(elem.getCurIndex()), symb)) {
+                        if (elem.getPointPosition() == elem.getRight().size())
+                            continue;
                         else {
-                            elem.pointPosition++;
-                            if (elem.curIndex < elem.right.size() - 1) {
-                                elem.curIndex++;
+                            elem.setPointPosition(elem.getPointPosition() + 1);
+                            if (elem.getCurIndex() < (elem.getRight().size() - 1)) {
+                                elem.setCurIndex(elem.getCurIndex() + 1);
                             }
                             subVec.add(elem);
                         }
@@ -73,30 +70,35 @@ public class LrGraph {
         }
     }
 
-    public void first(LrSituation item, Set<String> setSymb) {
-        if (item.curIndex == item.right.size() - 1) {
-            setSymb.add(item.tail);
+    public Set<String> first(LrSituation item) {
+        Set<String> setSymb = new HashSet<>();
+
+        if (item.getCurIndex() == item.getRight().size() - 1) {
+            setSymb.add(item.getTail());
         } else {
-            int size = item.right.get(item.curIndex + 1).length();
-            if (GrammarSymbolControl.isTerminal(String.valueOf(item.right.get(item.curIndex + 1).charAt(0))) || (size > 1 && item.right.get(item.curIndex + 1).charAt(1) == '-')) {
-                setSymb.add(item.right.get(item.curIndex + 1));
-                return;
+            int size = item.getRight().get(item.getCurIndex() + 1).length();
+            if (GrammarSymbolControl.isTerminal(String.valueOf(item.getRight().get(item.getCurIndex() + 1).charAt(0)))
+                    || (size > 1 && item.getRight().get(item.getCurIndex() + 1).charAt(1) == '-')) {
+                setSymb.add(item.getRight().get(item.getCurIndex() + 1));
+                return setSymb;
             }
 
             for (int i = 1; i < grammar.size(); ++i) {
                 GRRule gr = grammar.getRule(i);
-                if (Objects.equals(item.right.get(item.curIndex + 1), gr.left)) {
-                    int size2 = gr.right.get(0).length();
+                if (Objects.equals(item.getRight().get(item.getCurIndex() + 1), gr.getLeft())) {
+                    int size2 = gr.getRight().get(0).length();
 
-                    if (GrammarSymbolControl.isTerminal(String.valueOf(gr.right.get(0).charAt(0))) || (size2 > 1 && gr.right.get(0).charAt(1) == '-')) {
-                        setSymb.add(gr.right.get(0));
+                    if (GrammarSymbolControl.isTerminal(String.valueOf(gr.getRight().get(0).charAt(0)))
+                            || (size2 > 1 && gr.getRight().get(0).charAt(1) == '-')) {
+                        setSymb.add(gr.getRight().get(0));
                     } else {
                         for (int j = 1; j < grammar.size(); ++j) {
                             GRRule gr2 = grammar.getRule(j);
-                            if (Objects.equals(gr.right.get(0), gr2.left)) {
-                                size2 = gr2.right.get(0).length();
-                                if (GrammarSymbolControl.isTerminal(String.valueOf(gr2.right.get(0).charAt(0))) || (size2 > 1 && gr2.right.get(0).charAt(1) == '-')) {
-                                    setSymb.add(gr2.right.get(0));
+                            if (Objects.equals(gr.getRight().get(0), gr2.getLeft())) {
+                                size2 = gr2.getRight().get(0).length();
+                                if (GrammarSymbolControl.isTerminal(String.valueOf(gr2.getRight().get(0).charAt(0)))
+                                        || (size2 > 1 && gr2.getRight().get(0).charAt(1) == '-')) {
+                                    setSymb.add(gr2.getRight().get(0));
                                 }
                             }
                         }
@@ -107,26 +109,23 @@ public class LrGraph {
             if (setSymb.isEmpty())
                 setSymb.add(item.tail);
         }
+        return setSymb;
     }
 
     public void closure(ArrayList<LrSituation> lrVec) {
         for (int i = 0; i < lrVec.size(); ++i) {
             LrSituation lrSit = lrVec.get(i);
-            Set<String> symbPrev = new HashSet<>();
-            first(lrSit, symbPrev);
+            Set<String> symbPrev = first(lrSit);
 
             for (String symbItem: symbPrev) {
-                for (int j = 0 /*1*/; j < grammar.size(); ++j) {
+                for (int j = 0; j < grammar.size(); ++j) {
                     GRRule gr = grammar.getRule(j);
-                    if (lrSit.pointPosition <= lrSit.curIndex) {
-                        if (Objects.equals(lrSit.right.get(lrSit.curIndex), gr.left)) {
-                            LrSituation sit = new LrSituation();
-                            sit.left = gr.left;
-                            sit.right = gr.right;
-                            sit.tail = symbItem;
-                            sit.rule = j;
+                    if (lrSit.getPointPosition() <= lrSit.getCurIndex()) {
+                        if (Objects.equals(lrSit.getRight().get(lrSit.getCurIndex()), gr.getLeft())) {
+                            LrSituation sit = new LrSituation(gr.getLeft(), gr.getRight(), symbItem, j);
 
                             boolean isNewSituation = false;
+
                             for (LrSituation situation : lrVec) {
                                 if (situation.equals(sit)) {
                                     isNewSituation = true;
@@ -142,15 +141,17 @@ public class LrGraph {
         }
     }
 
-    public void setOfStates(ArrayList<LrSituation> lrVec, Set<String> setStr) {
+    public Set<String> setOfStates(ArrayList<LrSituation> lrVec) {
+        Set<String> setStr = new HashSet<>();
         for (LrSituation elem: lrVec) {
-            if (elem.right.get(elem.curIndex).length() > 0)
+            if (elem.getRight().get(elem.getCurIndex()).length() > 0)
             {
-                setStr.add(elem.right.get(elem.curIndex));
-                setElements.add(elem.right.get(elem.curIndex));
+                setStr.add(elem.getRight().get(elem.getCurIndex()));
+                setElements.add(elem.getRight().get(elem.getCurIndex()));
             }
         }
         setElements.add("$");
+        return setStr;
     }
 
     public void compareAndStore(ArrayList<LrSituation> vec, GraphState grs) {
@@ -163,12 +164,12 @@ public class LrGraph {
                 }
             }
             if (isExcessElem) {
-                grs.childPosition = i;
+                grs.setChildPosition(i);
                 return;
             }
         }
 
-        grs.childPosition = listVecs.size();
+        grs.setChildPosition(listVecs.size());
         listVecs.add(vec);
     }
 
@@ -180,20 +181,20 @@ public class LrGraph {
 
             for (LrSituation elem: state) {
                 StringBuilder tmp = new StringBuilder();
-                for (int i = 0; i < elem.right.size(); ++i) {
-                    if (i == elem.pointPosition) {
+                for (int i = 0; i < elem.getRight().size(); ++i) {
+                    if (i == elem.getPointPosition()) {
                         tmp.append(" . ");
                     }
-                    tmp.append(elem.right.get(i));
-                    if (i != elem.right.size() - 1) {
+                    tmp.append(elem.getRight().get(i));
+                    if (i != (elem.getRight().size() - 1)) {
                         tmp.append(" ");
                     }
                 }
-                if (elem.pointPosition == elem.right.size()) {
+                if (elem.getPointPosition() == elem.getRight().size()) {
                     tmp.append(".");
                 }
-                System.out.println(elem.left + " -> " + tmp + "|" + elem.tail + "\n");
-                writter.write(elem.left + " -> " + tmp + "|" + elem.tail + "\n");
+                System.out.println(elem.getLeft() + " -> " + tmp + "|" + elem.getTail() + "\n");
+                writter.write(elem.getLeft() + " -> " + tmp + "|" + elem.getTail() + "\n");
             }
         }
     }

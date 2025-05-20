@@ -1,19 +1,27 @@
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class LrSituation {
-    public String left;
-    public String tail;
-    public int curIndex;
-    public int pointPosition;
-    public int rule;
-    public ArrayList<String> right;
+    protected String left;
+    protected String tail;
+    protected int curIndex;
+    protected int pointPosition;
+    protected int rule;
+    protected ArrayList<String> right;
 
     public LrSituation(){
         tail = "$";
         rule = 0;
         curIndex = 0;
         pointPosition = 0;
+    }
+
+    public LrSituation(String left, ArrayList<String> right, String tail, int rule) {
+        this.left = left;
+        this.tail = tail;
+        this.curIndex = 0;
+        this.pointPosition = 0;
+        this.rule = rule;
+        this.right = right;
     }
 
     public LrSituation(LrSituation lrs) {
@@ -25,15 +33,64 @@ public class LrSituation {
         this.right = lrs.right;
     }
 
-    public boolean equals(LrSituation that) {
-        if (this == that) return true;
-        if (that == null || getClass() != that.getClass()) return false;
+    public String getLeft() {
+        return left;
+    }
 
-        if (curIndex != that.curIndex) return false;
-        if (pointPosition != that.pointPosition) return false;
-        if (rule != that.rule) return false;
-        if (!Objects.equals(left, that.left)) return false;
-        if (!Objects.equals(tail, that.tail)) return false;
-        return Objects.equals(right, that.right);
+    public void setLeft(String left) {
+        this.left = left;
+    }
+
+    public String getTail() {
+        return tail;
+    }
+
+    public void setTail(String tail) {
+        this.tail = tail;
+    }
+
+    public int getCurIndex() {
+        return curIndex;
+    }
+
+    public void setCurIndex(int curIndex) {
+        this.curIndex = curIndex;
+    }
+
+    public int getPointPosition() {
+        return pointPosition;
+    }
+
+    public void setPointPosition(int pointPosition) {
+        this.pointPosition = pointPosition;
+    }
+
+    public int getRule() {
+        return rule;
+    }
+
+    public void setRule(int rule) {
+        this.rule = rule;
+    }
+
+    public ArrayList<String> getRight() {
+        return right;
+    }
+
+    public void setRight(ArrayList<String> right) {
+        this.right = right;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LrSituation situation)) return false;
+
+        if (curIndex != situation.curIndex) return false;
+        if (pointPosition != situation.pointPosition) return false;
+        if (rule != situation.rule) return false;
+        if (!left.equals(situation.left)) return false;
+        if (!tail.equals(situation.tail)) return false;
+        return right.equals(situation.right);
     }
 }

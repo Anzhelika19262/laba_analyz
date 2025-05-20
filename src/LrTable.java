@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.Objects;
 
 public class LrTable {
-    LrGraph graph;
-    LrGrammar gram;
-    ArrayList<ArrayList<TableCell>> table = new ArrayList<>();
+    protected LrGraph graph;
+    protected LrGrammar gram;
+    protected ArrayList<ArrayList<TableCell>> table = new ArrayList<>();
 
     public LrTable(LrGraph graph, LrGrammar gram) {
         this.graph = graph;
@@ -20,7 +20,7 @@ public class LrTable {
 
         for (ArrayList<LrSituation> state: graph.getListVecs()) {
             ArrayList<TableCell> vec = new ArrayList<>();
-            for (String elem: graph.setElements) {
+            for (String elem: graph.getSetElements()) {
                 TableCell t = new TableCell(' ', -1);
                 vec.add(t);
             }
@@ -33,8 +33,8 @@ public class LrTable {
 
             for (String elem: graph.getSetElements()) {
                 for (LrSituation situation: graph.getListVecs().get(i)){
-                    if (situation.pointPosition == situation.right.size() && Objects.equals(situation.tail, elem)) {
-                        boolean isHalt = (situation.right == gram.grammar.get(0).right);
+                    if (situation.getPointPosition() == situation.getRight().size() && Objects.equals(situation.getTail(), elem)) {
+                        boolean isHalt = (situation.getRight() == gram.grammar.get(0).getRight());
                         if (cell.getNumState() != -1 && (cell.getStateSymb() == 'R' || cell.getStateSymb() == 'H')) {
                             isError = true;
                             System.out.println("\n 1 Ошибка в грамматике!  Состояние: S" +
@@ -42,17 +42,16 @@ public class LrTable {
                                     ", конфликт: " + cell.getStateSymb() + cell.getNumState() +
                                     "/" + (isHalt ? 'H' : 'R') + situation.rule + "\n");
                         }
-                        cell.setStateSymb((isHalt ? 'H' : 'R'));
-                        cell.setNumState(situation.rule);
-                        cell.setLableElem(elem);
-                        //t.action = gram->grammar[situation.rule].action[situation.right.size() - 1];
+                        getElement(i, j).setStateSymb((isHalt ? 'H' : 'R'));
+                        getElement(i, j).setNumState(situation.rule);
+                        getElement(i, j).setLableElem(elem);
                     }
 
-                    if (situation.pointPosition < situation.right.size()) {
+                    if (situation.getPointPosition() < situation.getRight().size()) {
                         int edge = 0;
                         for (GRRule grRule: gram.grammar) {
-                            if (grRule.left.equals(situation.left) && grRule.right.equals(situation.right) &&
-                            elem.equals(grRule.right.get(situation.curIndex))) {
+                            if (grRule.getLeft().equals(situation.getLeft()) && grRule.getRight().equals(situation.getRight()) &&
+                            elem.equals(grRule.getRight().get(situation.getCurIndex()))) {
                                 for (GraphState graphState: graph.getGrStates()) {
                                     if (graphState.parentPosition == i && elem.equals(graphState.labelTransition)) {
                                         if (cell.getNumState() != -1 && cell.stateSymb == 'S' && cell.getNumState() != graphState.childPosition) {
@@ -62,10 +61,10 @@ public class LrTable {
                                             isError = true;
 
                                         }
-                                        cell.setStateSymb('S');
-                                        cell.setNumState(graphState.childPosition);
-                                        cell.setLableElem(elem);
-                                        cell.setAction(gram.grammar.get(situation.rule).action.get(situation.curIndex));
+                                        getElement(i, j).setStateSymb('S');
+                                        getElement(i, j).setNumState(graphState.getChildPosition());
+                                        getElement(i, j).setLableElem(elem);
+                                        getElement(i, j).setAction(gram.grammar.get(situation.getRule()).getAction().get(situation.getCurIndex()));
                                         break;
                                     }
                                 }
