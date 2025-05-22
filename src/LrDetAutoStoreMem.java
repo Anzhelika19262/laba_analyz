@@ -1,6 +1,7 @@
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Scanner;
 import java.util.Stack;
 
 public class LrDetAutoStoreMem {
@@ -34,9 +35,8 @@ public class LrDetAutoStoreMem {
     }
 
     public int determReserveWord(String str, int position) {
-        String formNewString = str.substring(position);
-
         for (String word : reservedWords) {
+            String formNewString = str.substring(position, word.length());
             if (formNewString.compareTo(word) == 0) {
                 if (position > 0 && (isAllowSymbol(str.charAt(position - 1))
                         || isAllowSymbol(str.charAt(position + word.length())))) {
@@ -58,7 +58,7 @@ public class LrDetAutoStoreMem {
 
         int len, i = 0;
         if ((len = determReserveWord(parseStr, i)) > 0) {
-            tmp = parseStr.substring(i, len);
+            tmp = parseStr.substring(i, i + len);
             i += len;
         }  else  {
             tmp = Character.toString(parseStr.charAt(i++));
@@ -92,6 +92,7 @@ public class LrDetAutoStoreMem {
                 }
 
                 elStore = store.peek();
+
                 elStore.setLableElem(gram.grammar.get(numLine).getLeft());
                 linePositionInTable = elStore.getNumState();
 
@@ -111,7 +112,7 @@ public class LrDetAutoStoreMem {
             } else {	/* elStore.stateSymb == 'S' */
                 store.push(elStore);
                 if ((len = determReserveWord(parseStr, i)) > 0) {
-                    tmp = parseStr.substring(i, len);
+                    tmp = parseStr.substring(i, i + len);
                     i += len;
                     itemPos += len;
                 } else {
@@ -164,7 +165,9 @@ public class LrDetAutoStoreMem {
 
         SemanticType st = new SemanticType();
 
-        for (String sa: cell.getAction().trim().split("\\s+")) {
+        Scanner scanner = new Scanner(cell.getAction().trim());
+        while (scanner.hasNext()) {
+            String sa = scanner.next();
             if (Objects.equals(sa, "TYPE") || Objects.equals(sa, "NAMESPACE")) {
                 type = lex;
             } else if (Objects.equals(sa, "ADDPARAM") || Objects.equals(sa, "ADDFUNCNAME")
@@ -240,6 +243,7 @@ public class LrDetAutoStoreMem {
                 }
             }
         }
+        scanner.close();
         return 0;
     }
     public void printImplActionsData() {

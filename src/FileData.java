@@ -1,17 +1,17 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class FileData {
     public static void fillDataFromFile(BufferedReader inputFile, LrGrammar grammar) throws IOException {
         String fileLine;
-        String startWord;
         int cntLine = 0;
 
         while ((fileLine = inputFile.readLine()) != null){
             GRRule newRule = new GRRule();
             String lineWord = "";
-            startWord = "";
+            String startWord = "";
             cntLine++;
 
             Scanner scanner = new Scanner(fileLine);
@@ -46,7 +46,13 @@ public class FileData {
                     if (!isAction)
                         newRule.addAction("");
                     if (!newRule.getRight().isEmpty()) {
-                        grammar.setRule(newRule);
+                        GRRule copyRule = new GRRule();
+                        copyRule.setLeft(newRule.getLeft());
+                        copyRule.setRight(new ArrayList<>(newRule.getRight()));
+                        copyRule.setAction(new ArrayList<>(newRule.getAction()));
+
+                        grammar.setRule(copyRule);
+
                         newRule.getRight().clear();
                         newRule.getAction().clear();
                         isAction = true;
@@ -57,6 +63,7 @@ public class FileData {
                 newRule.addAction("");
 
             grammar.setRule(newRule);
+            scanner.close();
         }
     }
     public static String fillRawDataFromFile(BufferedReader inputFile) throws IOException {

@@ -1,11 +1,14 @@
 import java.util.ArrayList;
 
 public class GRRule {
-    String left = "";
-    ArrayList<String> right = new ArrayList<>();
-    ArrayList<String> action = new ArrayList<>();
+    String left;
+    ArrayList<String> right;
+    ArrayList<String> action;
 
     public GRRule() {
+        this.left = "";
+        this.right = new ArrayList<>();
+        this.action = new ArrayList<>();
     }
 
     public ArrayList<String> getRight() {

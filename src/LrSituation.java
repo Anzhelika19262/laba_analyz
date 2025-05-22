@@ -85,8 +85,6 @@ public class LrSituation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof LrSituation situation)) return false;
-
-        if (curIndex != situation.curIndex) return false;
         if (pointPosition != situation.pointPosition) return false;
         if (rule != situation.rule) return false;
         if (!left.equals(situation.left)) return false;
